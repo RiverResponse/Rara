@@ -16,7 +16,7 @@ public class EntityInspector : MonoBehaviour
     public RectTransform EntityBehaviourToggleRoot;
     public BehaviourCollection BehaviourCollection;
 
-    public ReactiveProperty<EntityBase> MyEntity;
+    private ReactiveProperty<EntityBase> MyEntity = new ReactiveProperty<EntityBase>();
 
     public Image IconImage;
 
@@ -32,17 +32,14 @@ public class EntityInspector : MonoBehaviour
     private void Awake()
     {
         _temporarySubscriptions = new List<IDisposable>();
-    }
 
-    void Start()
-    {
         MyEntity.Subscribe(ReactToEntityChanged).AddTo(this);
 
         CreateEntityButton.onClick.AddListener(CreateInstance);
         DeleteEntityButton.onClick.AddListener(DeleteEntity);
 
         MessageBroker.Default.Receive<ChooseEntityMessage>().Subscribe(msg => MyEntity.Value = msg.Entity).AddTo(this);
-        
+
         for (int i = 0; i < BehaviourCollection.Behaviors.Count; i++)
         {
             var toggle = Instantiate(EntityBehaviourTogglePrefab, EntityBehaviourToggleRoot);
@@ -53,22 +50,31 @@ public class EntityInspector : MonoBehaviour
 
     private void ReactToEntityChanged(EntityBase entityBase)
     {
-        BindData();
-
-        if (_selectedEntityInstance != null)
+        if (entityBase == null)
         {
-            Destroy(_selectedEntityInstance.gameObject);
+            gameObject.SetActive(false);
         }
-
-        if (entityBase != null)
+        else
         {
-            _selectedEntityInstance = Instantiate(EntityPresenterPrefab, EntityInstanceRoot);
-            _selectedEntityInstance.transform.localPosition = Vector3.zero;
-            _selectedEntityInstance.Data = entityBase;
+            gameObject.SetActive(true);
+            
+            BindData();
 
-            foreach (var t in _entityBehaviourToggles)
+            if (_selectedEntityInstance != null)
             {
-                t.BindEntity(entityBase);
+                Destroy(_selectedEntityInstance.gameObject);
+            }
+
+            if (entityBase != null)
+            {
+                _selectedEntityInstance = Instantiate(EntityPresenterPrefab, EntityInstanceRoot);
+                _selectedEntityInstance.transform.localPosition = Vector3.zero;
+                _selectedEntityInstance.Data = entityBase;
+
+                foreach (var t in _entityBehaviourToggles)
+                {
+                    t.BindEntity(entityBase);
+                }
             }
         }
     }

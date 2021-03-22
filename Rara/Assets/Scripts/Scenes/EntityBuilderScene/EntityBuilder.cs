@@ -111,11 +111,11 @@ public class EntityBuilder : MonoBehaviour
 
     private void ReactToEntityChanged()
     {
-        EntityInspector.SetActive(true);
+        // EntityInspector.SetActive(true);
     }
 
     private void ClearUI()
     {
-        EntityInspector.SetActive(false);
+        // EntityInspector.SetActive(false);
     }
 }
