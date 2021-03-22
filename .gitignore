@@ -58,3 +58,9 @@ sysinfo.txt
 # Crashlytics generated file
 crashlytics-build.properties
 
+.idea
+Rara/Library
+Rara/Logs
+Rara/obj
+Rara/Temp
+Rara/UserSettings
