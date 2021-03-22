@@ -75,7 +75,7 @@ public class EntityInspector : MonoBehaviour
 
     private void DeleteEntity()
     {
-        //TODO:
+        MessageBroker.Default.Publish(new RemoveEntity(MyEntity.Value));
     }
 
     private void CreateInstance()

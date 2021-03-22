@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using NaughtyAttributes;
 using UniRx;
 using UnityEngine;
@@ -58,7 +59,14 @@ public class EntityBuilder : MonoBehaviour
 
         _entities.ObserveAdd().Subscribe(ReactToEntityAdded).AddTo(this);
         _entities.ObserveRemove().Subscribe(ReactToEntityRemoved).AddTo(this);
-        MessageBroker.Default.Receive<ChooseEntityMessage>().Subscribe(msg => _currentEntity.Value = msg.Entity).AddTo(this);
+        MessageBroker.Default.Receive<ChooseEntityMessage>().Subscribe(msg => ReactToEntitySelected(msg.Entity)).AddTo(this);
+        MessageBroker.Default.Receive<RemoveEntity>().Subscribe(msg => _entities.Remove(msg.EntityBase)).AddTo(this);
+    }
+
+    private void ReactToEntitySelected(EntityBase objEntity)
+    {
+        _currentEntity.Value = objEntity;
+        EntityTypes.SetActive(false);
     }
 
     private void ReactToEntityAdded(CollectionAddEvent<EntityBase> e)
@@ -70,7 +78,12 @@ public class EntityBuilder : MonoBehaviour
 
     private void ReactToEntityRemoved(CollectionRemoveEvent<EntityBase> e)
     {
-        //TODO: Remove prefab from list
+        var instance = _entityButtons.First(b => b.MyEntity.Value == e.Value);
+        if (instance != null)
+        {
+            Destroy(instance.gameObject);
+            MessageBroker.Default.Publish(new ChooseEntityMessage(null));
+        }
     }
 
     private void AddNewEntity()
