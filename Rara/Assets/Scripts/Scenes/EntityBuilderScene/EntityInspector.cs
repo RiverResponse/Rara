@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Messages;
 using TMPro;
 using UniRx;
 using UnityEngine;
@@ -8,15 +9,13 @@ using UnityEngine.UI;
 /// <summary>
 /// Responsible to show and set parameters for the selected entity
 /// </summary>
-public class EntityInspector : MonoBehaviour
+public class EntityInspector : UIBase
 {
-    public Transform EntityInstanceRoot;
-    public EntityPresenter EntityPresenterPrefab;
     public EntityBehaviourToggle EntityBehaviourTogglePrefab;
     public RectTransform EntityBehaviourToggleRoot;
     public BehaviourCollection BehaviourCollection;
 
-    private ReactiveProperty<EntityBase> MyEntity = new ReactiveProperty<EntityBase>();
+    private ReactiveProperty<EntityBase> _selected = new ReactiveProperty<EntityBase>();
 
     public Image IconImage;
 
@@ -27,19 +26,28 @@ public class EntityInspector : MonoBehaviour
 
     private List<IDisposable> _temporarySubscriptions;
     private EntityPresenter _selectedEntityInstance;
-    private List<EntityBehaviourToggle> _entityBehaviourToggles = new List<EntityBehaviourToggle>();
 
-    private void Awake()
+    private List<EntityBehaviourToggle> _entityBehaviourToggles = new List<EntityBehaviourToggle>();
+    // private BoolReactiveProperty _isEnabled = new BoolReactiveProperty(true);
+    // private BoolReactiveProperty _isActive = new BoolReactiveProperty();
+
+    protected override void Awake()
     {
+        base.Awake();
         _temporarySubscriptions = new List<IDisposable>();
 
-        MyEntity.Subscribe(ReactToEntityChanged).AddTo(this);
+        _selected.Subscribe(ReactToEntityChanged).AddTo(this);
 
         CreateEntityButton.onClick.AddListener(CreateInstance);
         DeleteEntityButton.onClick.AddListener(DeleteEntity);
 
-        MessageBroker.Default.Receive<ChooseEntityMessage>().Subscribe(msg => MyEntity.Value = msg.Entity).AddTo(this);
+        GameMaster.Instance.SelectedEntity.Subscribe(x => _selected.Value = x).AddTo(this);
 
+        // _isActive.Subscribe(b => { gameObject.SetActive(b); }).AddTo(this);
+        // _isEnabled.CombineLatest(_selected, (isEnabled, selected) => isEnabled && selected != null).Subscribe(b => _isActive.Value = b).AddTo(this);
+        //
+        // MessageBroker.Default.Receive<ActivateUIMessage>().Subscribe(msg => _isEnabled.Value = msg.SceneType == ActivateUIMessage.SceneTypes.EntityEditor).AddTo(this);
+        
         for (int i = 0; i < BehaviourCollection.Behaviors.Count; i++)
         {
             var toggle = Instantiate(EntityBehaviourTogglePrefab, EntityBehaviourToggleRoot);
@@ -50,45 +58,32 @@ public class EntityInspector : MonoBehaviour
 
     private void ReactToEntityChanged(EntityBase entityBase)
     {
-        if (entityBase == null)
+        if (_selectedEntityInstance != null)
         {
-            gameObject.SetActive(false);
+            Destroy(_selectedEntityInstance.gameObject);
         }
-        else
+
+        if (entityBase != null)
         {
-            gameObject.SetActive(true);
-            
             BindData();
 
-            if (_selectedEntityInstance != null)
+            foreach (var t in _entityBehaviourToggles)
             {
-                Destroy(_selectedEntityInstance.gameObject);
-            }
-
-            if (entityBase != null)
-            {
-                _selectedEntityInstance = Instantiate(EntityPresenterPrefab, EntityInstanceRoot);
-                _selectedEntityInstance.transform.localPosition = Vector3.zero;
-                _selectedEntityInstance.Data = entityBase;
-
-                foreach (var t in _entityBehaviourToggles)
-                {
-                    t.BindEntity(entityBase);
-                }
+                t.BindEntity(entityBase);
             }
         }
     }
 
     private void DeleteEntity()
     {
-        MessageBroker.Default.Publish(new RemoveEntity(MyEntity.Value));
+        MessageBroker.Default.Publish(new RemoveEntityMessage(_selected.Value));
     }
 
     private void CreateInstance()
     {
-        //TODO:
+        MessageBroker.Default.Publish(new InstantiateEntityMessage(_selected.Value));
+        MessageBroker.Default.Publish(new ActivateUIMessage(ActivateUIMessage.AppStateTypes.LevelEditor));
     }
-
 
     void BindData()
     {
@@ -99,21 +94,16 @@ public class EntityInspector : MonoBehaviour
 
         _temporarySubscriptions.Clear();
 
-        if (MyEntity.Value == null)
+        if (_selected.Value == null)
         {
             return;
         }
 
-        //This was not working a year ago. If not than uncomment the following
-        // _temporarySubscriptions.Add(MyEntity.Value.Name.Subscribe(s => NameLabel.text = s));
-        // _temporarySubscriptions.Add(MyEntity.Value.Description.Subscribe(s => DescLabel.text = s));
-        // _temporarySubscriptions.Add(MyEntity.Value.EntityData.Subscribe(d => IconImage.sprite = d.Icon));
+        _selected.Value.EntityData.Subscribe(d => IconImage.sprite = d.Icon).AddTo(_temporarySubscriptions);
+        _selected.Value.Name.Subscribe(s => NameInputField.text = s).AddTo(_temporarySubscriptions);
+        _selected.Value.Description.Subscribe(s => DescInputField.text = s).AddTo(_temporarySubscriptions);
 
-        MyEntity.Value.EntityData.Subscribe(d => IconImage.sprite = d.Icon).AddTo(_temporarySubscriptions);
-        MyEntity.Value.Name.Subscribe(s => NameInputField.text = s).AddTo(_temporarySubscriptions);
-        MyEntity.Value.Description.Subscribe(s => DescInputField.text = s).AddTo(_temporarySubscriptions);
-
-        NameInputField.onValueChanged.AddListener(s => MyEntity.Value.Name.Value = s);
-        DescInputField.onValueChanged.AddListener(s => MyEntity.Value.Description.Value = s);
+        NameInputField.onValueChanged.AddListener(s => _selected.Value.Name.Value = s);
+        DescInputField.onValueChanged.AddListener(s => _selected.Value.Description.Value = s);
     }
 }

@@ -3,10 +3,10 @@ using UniRx;
 
 public class EntityBase
 {
-    public ReactiveCollection<EntityBehaviourBase> Behaviours = new ReactiveCollection<EntityBehaviourBase>();
-    public ReactiveProperty<EntityData> EntityData = new ReactiveProperty<EntityData>();
-    public StringReactiveProperty Name = new StringReactiveProperty();
-    public StringReactiveProperty Description = new StringReactiveProperty();
+    public readonly ReactiveCollection<EntityBehaviourBase> Behaviours = new ReactiveCollection<EntityBehaviourBase>();
+    public readonly ReactiveProperty<EntityData> EntityData = new ReactiveProperty<EntityData>();
+    public readonly StringReactiveProperty Name = new StringReactiveProperty();
+    public readonly StringReactiveProperty Description = new StringReactiveProperty();
 
     public EntityBase()
     {

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Messages;
 using NaughtyAttributes;
 using UniRx;
 using UnityEngine;
@@ -8,7 +9,7 @@ using UnityEngine.UI;
 /// <summary>
 /// This class should show all the properties inside the entity builder scene
 /// </summary>
-public class EntityBuilder : MonoBehaviour
+public class EntityBuilder : UIBase
 {
     [Header("Data")]
     [Tooltip("")]
@@ -27,46 +28,32 @@ public class EntityBuilder : MonoBehaviour
     [Tooltip("Root object for the possible entity types")]
     public GameObject EntityTypes;
 
-    [Tooltip("Entity inspector's root")]
-    public GameObject EntityInspector;
-
     [Tooltip("Entity presenter in the list")]
     public EntityListEntityPresenter EntityListEntityPresenterPrefab;
 
     [Tooltip("Root object for the list elements")]
     public RectTransform InstanceRoot;
-
-
+    
     private ReactiveCollection<EntityBase> _entities;
     private List<EntityListEntityPresenter> _entityButtons;
-    private ReactiveProperty<EntityBase> _currentEntity;
-
-    private void Awake()
-    {
-        _entities = new ReactiveCollection<EntityBase>();
-        _currentEntity = new ReactiveProperty<EntityBase>();
-        _entityButtons = new List<EntityListEntityPresenter>();
-    }
+    
 
     void Start()
     {
+        _entities = new ReactiveCollection<EntityBase>();
+        _entityButtons = new List<EntityListEntityPresenter>();
         CreateEntityButton.onClick.AddListener(AddNewEntity);
         CreateCubeEntityButton.onClick.AddListener(CreateCubeEntity);
         CreateSphereEntityButton.onClick.AddListener(CreateSphereEntity);
 
-        _currentEntity.Where(x => x != null).Subscribe(_ => ReactToEntityChanged()).AddTo(this);
-        _currentEntity.Where(x => x == null).Subscribe(_ => ClearUI()).AddTo(this);
+        GameMaster.Instance.SelectedEntity.Where(x => x != null).Subscribe(_ => ReactToEntityChanged()).AddTo(this);
+        GameMaster.Instance.SelectedEntity.Where(x => x == null).Subscribe(_ => ClearUI()).AddTo(this);
 
         _entities.ObserveAdd().Subscribe(ReactToEntityAdded).AddTo(this);
         _entities.ObserveRemove().Subscribe(ReactToEntityRemoved).AddTo(this);
-        MessageBroker.Default.Receive<ChooseEntityMessage>().Subscribe(msg => ReactToEntitySelected(msg.Entity)).AddTo(this);
-        MessageBroker.Default.Receive<RemoveEntity>().Subscribe(msg => _entities.Remove(msg.EntityBase)).AddTo(this);
-    }
-
-    private void ReactToEntitySelected(EntityBase objEntity)
-    {
-        _currentEntity.Value = objEntity;
-        EntityTypes.SetActive(false);
+        
+        // MessageBroker.Default.Receive<SelectEntityBaseMessage>().Subscribe(msg => ReactToEntitySelected(msg.Entity)).AddTo(this);
+        MessageBroker.Default.Receive<RemoveEntityMessage>().Subscribe(msg => _entities.Remove(msg.EntityBase)).AddTo(this);
     }
 
     private void ReactToEntityAdded(CollectionAddEvent<EntityBase> e)
@@ -82,7 +69,7 @@ public class EntityBuilder : MonoBehaviour
         if (instance != null)
         {
             Destroy(instance.gameObject);
-            MessageBroker.Default.Publish(new ChooseEntityMessage(null));
+            MessageBroker.Default.Publish(new SelectEntityBaseMessage(null));
         }
     }
 
@@ -97,7 +84,7 @@ public class EntityBuilder : MonoBehaviour
         var entity = new EntityBase();
         entity.EntityData.Value = EntityCollection.CubeEntity;
         _entities.Add(entity);
-        MessageBroker.Default.Publish(new ChooseEntityMessage(entity));
+        MessageBroker.Default.Publish(new SelectEntityBaseMessage(entity));
     }
 
     [Button]
@@ -106,16 +93,16 @@ public class EntityBuilder : MonoBehaviour
         var entity = new EntityBase();
         entity.EntityData.Value = EntityCollection.SphereEntity;
         _entities.Add(entity);
-        MessageBroker.Default.Publish(new ChooseEntityMessage(entity));
+        MessageBroker.Default.Publish(new SelectEntityBaseMessage(entity));
     }
 
     private void ReactToEntityChanged()
     {
-        // EntityInspector.SetActive(true);
+        EntityTypes.SetActive(false);
     }
 
     private void ClearUI()
     {
-        // EntityInspector.SetActive(false);
+        
     }
 }

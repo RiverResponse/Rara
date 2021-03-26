@@ -1,3 +1,4 @@
+using Messages;
 using TMPro;
 using UniRx;
 using UnityEngine;
@@ -20,7 +21,7 @@ public class EntityListEntityPresenter : MonoBehaviour
 
     private void ChooseEntity()
     {
-        MessageBroker.Default.Publish(new ChooseEntityMessage(MyEntity.Value));
+        MessageBroker.Default.Publish(new SelectEntityBaseMessage(MyEntity.Value));
     }
 
 
