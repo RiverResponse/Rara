@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UniRx;
 using UnityEngine;
 
-public class SelectedEntityPresenter : UIBase
+public class SelectedEntityPresenter : StateReactor
 {
     private GameObject _entityInstance;
 
@@ -21,7 +21,7 @@ public class SelectedEntityPresenter : UIBase
 
         if (entityBase != null)
         {
-            _entityInstance = Instantiate(entityBase.EntityData.Value.Prefab);
+            _entityInstance = Instantiate(entityBase.EntityData.Value.Prefab, transform);
             _entityInstance.transform.localPosition = Vector3.zero;
             _entityInstance.SetLayerRecursively(gameObject.layer);
         }

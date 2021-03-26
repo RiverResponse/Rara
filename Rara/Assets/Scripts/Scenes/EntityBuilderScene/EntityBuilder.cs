@@ -9,7 +9,7 @@ using UnityEngine.UI;
 /// <summary>
 /// This class should show all the properties inside the entity builder scene
 /// </summary>
-public class EntityBuilder : UIBase
+public class EntityBuilder : StateReactor
 {
     [Header("Data")]
     [Tooltip("")]

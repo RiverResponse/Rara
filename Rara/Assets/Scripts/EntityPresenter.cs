@@ -8,21 +8,21 @@ public class EntityPresenter : MonoBehaviour
     /// <summary>
     /// Entity data to be displayed
     /// </summary>
-    public EntityBase Data;
+    public EntityBase Data { get; private set; }
 
     private GameObject _instance;
 
-    void Start()
+
+    public void Initialize(EntityBase data)
     {
-        if (Data != null)
-        {
-            _instance = Instantiate(Data.EntityData.Value.Prefab, transform);
-            _instance.SetLayerRecursively(gameObject.layer);
-            _instance.transform.localPosition = Vector3.zero;
-        }
-        else
-        {
-            Debug.LogError("Please add EntityBase on the same frame as instantiated");
-        }
+        Data = data;
+
+        _instance = Instantiate(Data.EntityData.Value.Prefab, transform);
+        _instance.SetLayerRecursively(gameObject.layer);
+        _instance.transform.localPosition = Vector3.zero;
+    }
+
+    public void Drag()
+    {
     }
 }

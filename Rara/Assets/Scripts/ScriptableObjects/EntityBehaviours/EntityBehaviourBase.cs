@@ -18,6 +18,16 @@ public class EntityBehaviourBase : ScriptableObject
     public Sprite Icon;
 
     /// <summary>
+    /// Name of the behaviour
+    /// </summary>
+    public string BehaviourName;
+    
+    /// <summary>
+    /// Description of the behaviour
+    /// </summary>
+    public string BehaviourDescription;
+
+    /// <summary>
     /// Action to be executed when triggered
     /// </summary>
     public virtual void BehaviourAction()

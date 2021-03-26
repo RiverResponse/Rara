@@ -14,3 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ActionIndicator: {fileID: 0}
   Icon: {fileID: 21300000, guid: e5da668c6557abb47a17a303cf69943f, type: 3}
+  BehaviourName: Explosion behaviour
+  BehaviourDescription: When triggered,  this object explodes

@@ -9,7 +9,7 @@ using UnityEngine.UI;
 /// <summary>
 /// Responsible to show and set parameters for the selected entity
 /// </summary>
-public class EntityInspector : UIBase
+public class EntityInspector : StateReactor
 {
     public EntityBehaviourToggle EntityBehaviourTogglePrefab;
     public RectTransform EntityBehaviourToggleRoot;
@@ -25,7 +25,7 @@ public class EntityInspector : UIBase
     public Button DeleteEntityButton;
 
     private List<IDisposable> _temporarySubscriptions;
-    private EntityPresenter _selectedEntityInstance;
+    // private EntityPresenter _selectedEntityInstance;
 
     private List<EntityBehaviourToggle> _entityBehaviourToggles = new List<EntityBehaviourToggle>();
     // private BoolReactiveProperty _isEnabled = new BoolReactiveProperty(true);
@@ -58,10 +58,10 @@ public class EntityInspector : UIBase
 
     private void ReactToEntityChanged(EntityBase entityBase)
     {
-        if (_selectedEntityInstance != null)
-        {
-            Destroy(_selectedEntityInstance.gameObject);
-        }
+        // if (_selectedEntityInstance != null)
+        // {
+        //     Destroy(_selectedEntityInstance.gameObject);
+        // }
 
         if (entityBase != null)
         {
