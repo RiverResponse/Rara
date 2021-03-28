@@ -1,3 +1,4 @@
+using System;
 using System.IO.Ports;
 using Messages;
 using UniRx;
@@ -49,7 +50,6 @@ public class EntityPresenter : MonoBehaviour
                 if (msg.EntityBase == Data)
                 {
                     Destroy(gameObject);
-                    _currentSlot.Value.SetPresenter(null);
                 }
             }
         ).AddTo(this);
@@ -58,6 +58,11 @@ public class EntityPresenter : MonoBehaviour
             _meshRenderer.sharedMaterial = GameMaster.Instance.SelectedEntity.Value == Data && GameMaster.Instance.CurrentAppState.Value == ActivateUIMessage.AppStateTypes.EntityEditor
                 ? Selectedmaterial
                 : NotHoverMaterial).AddTo(this);
+    }
+
+    private void OnDestroy()
+    {
+        _currentSlot.Value.SetPresenter(null);
     }
 
     public void SetCurrentSlot(EntityInstanceSlot slot)
@@ -78,5 +83,18 @@ public class EntityPresenter : MonoBehaviour
     public void DragEnded()
     {
         _collider.enabled = true;
+        if (_currentSlot.Value is DestroyEntityInstanceSlot)
+        {
+            Destroy(gameObject);
+        }
+    }
+
+    public void Triggered()
+    {
+        Debug.Log("Triggered");
+        foreach (var behaviour in Data.Behaviours)
+        {
+            behaviour.BehaviourAction(transform.position);
+        }
     }
 }

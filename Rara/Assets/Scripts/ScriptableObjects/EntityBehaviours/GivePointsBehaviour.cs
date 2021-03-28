@@ -12,8 +12,9 @@ public class GivePointsBehaviour : EntityBehaviourBase
     }
 
     ///<inheritdoc cref="EntityBehaviourBase.BehaviourAction"/>
-    public override void BehaviourAction()
+    public override void BehaviourAction(Vector3 position)
     {
+        base.BehaviourAction(position);
         Debug.Log("Point adding triggered");
     }
 }

@@ -84,9 +84,7 @@ public class EntityDragger : MonoBehaviour
         if (_groundPlane.Raycast(ray, out float enter))
         {
             point = ray.GetPoint(enter);
-            point = point.Clamp(new Vector3(-2.5f, 0, -2.5f), new Vector3(2.5f, 0, 2.5f));
             point.y = 3f;
-
             Ray downRay = new Ray(point, Vector3.down);
             if (Physics.Raycast(downRay, out RaycastHit hit, float.PositiveInfinity, EntitySlotLayer))
             {
@@ -96,6 +94,22 @@ public class EntityDragger : MonoBehaviour
                     _entityInstanceSlot.Value = slot;
                 }
             }
+            else
+            {
+                point = point.Clamp(new Vector3(-2.5f, 0, -2.5f), new Vector3(2.5f, 0, 2.5f));
+                point.y = 3f;
+
+                downRay = new Ray(point, Vector3.down);
+                if (Physics.Raycast(downRay, out RaycastHit clampedHit, float.PositiveInfinity, EntitySlotLayer))
+                {
+                    var slot = clampedHit.transform.GetComponent<EntityInstanceSlot>();
+                    if (slot.IsEmpty)
+                    {
+                        _entityInstanceSlot.Value = slot;
+                    }
+                }
+            }
+
 
             point.y = 0f;
         }

@@ -1,3 +1,4 @@
+using Unity.Mathematics;
 using UnityEngine;
 
 public class EntityBehaviourBase : ScriptableObject
@@ -11,7 +12,7 @@ public class EntityBehaviourBase : ScriptableObject
     /// This object will be instantiated when triggered
     /// </summary>
     public GameObject ActionIndicator;
-    
+
     /// <summary>
     /// Icon of the Behaviour
     /// </summary>
@@ -21,7 +22,7 @@ public class EntityBehaviourBase : ScriptableObject
     /// Name of the behaviour
     /// </summary>
     public string BehaviourName;
-    
+
     /// <summary>
     /// Description of the behaviour
     /// </summary>
@@ -30,7 +31,13 @@ public class EntityBehaviourBase : ScriptableObject
     /// <summary>
     /// Action to be executed when triggered
     /// </summary>
-    public virtual void BehaviourAction()
+    public virtual void BehaviourAction(Vector3 position)
     {
+        Instantiate(ActionIndicator, position, quaternion.identity);
+    }
+
+    public virtual void SetToDefault()
+    {
+        
     }
 }

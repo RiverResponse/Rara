@@ -14,8 +14,10 @@ public class EntityInstanceSlot : MonoBehaviour
 
     void Start()
     {
-        _isHovered.Subscribe(b => MeshRenderer.sharedMaterial = b ? HoverMaterial : NotHoverMaterial).AddTo(this);
-        name = transform.parent.name;
+        if (MeshRenderer != null)
+        {
+            _isHovered.Subscribe(b => MeshRenderer.sharedMaterial = b ? HoverMaterial : NotHoverMaterial).AddTo(this);
+        }
     }
 
     protected void PlaceEntityInstance(EntityPresenter instance)
