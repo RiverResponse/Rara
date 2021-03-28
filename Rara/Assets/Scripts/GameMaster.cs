@@ -41,6 +41,8 @@ public class GameMaster : MonoBehaviour
         CurrentAppState = _currentAppState.ToReadOnlyReactiveProperty();
         MessageBroker.Default.Receive<SelectEntityBaseMessage>().Subscribe(msg => _selectedEntity.Value = msg.Entity).AddTo(this);
         MessageBroker.Default.Receive<ActivateUIMessage>().Subscribe(msg => _currentAppState.Value = msg.AppStateType).AddTo(this);
+
+        Observable.NextFrame().Subscribe(_ => MessageBroker.Default.Publish(new ActivateUIMessage(ActivateUIMessage.AppStateTypes.LevelEditor)));
     }
 
     void Start()

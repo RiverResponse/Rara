@@ -1,3 +1,4 @@
+using Unity.Mathematics;
 using UnityEngine;
 
 /// <summary>
@@ -21,5 +22,13 @@ public static class Extensions
         {
             trans.gameObject.layer = layer;
         }
+    }
+
+    public static Vector3 Clamp(this Vector3 target, Vector3 min, Vector3 max)
+    {
+        return new Vector3(
+            Mathf.Clamp(target.x, min.x, max.x),
+            Mathf.Clamp(target.y, min.y, max.y),
+            Mathf.Clamp(target.z, min.z, max.z));
     }
 }

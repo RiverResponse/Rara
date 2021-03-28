@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7689279955471370967}
   - component: {fileID: -2666629461917007646}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: EntityPresenter
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -43,3 +43,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c4df69ee604a2fb46b6d559821ac6d83, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  HoverMaterial: {fileID: 2100000, guid: e2bf94918440eef4b8ec8854b8e3eae4, type: 2}
+  NotHoverMaterial: {fileID: 2100000, guid: 2e07f8339bd70df439d244025f11ee6d, type: 2}
+  Selectedmaterial: {fileID: 2100000, guid: d6f0ef5a063748a4abafe92d725fb4b8, type: 2}

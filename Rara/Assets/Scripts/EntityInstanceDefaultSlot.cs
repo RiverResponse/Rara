@@ -17,14 +17,14 @@ public class EntityInstanceDefaultSlot : EntityInstanceSlot
     {
         if (_currentEntity == null)
         {
-            var currentEntity = Instantiate(EntityPresenterPrefab, transform);
+            var currentEntity = Instantiate(EntityPresenterPrefab);
             currentEntity.gameObject.SetLayerRecursively(gameObject.layer);
-            currentEntity.Initialize(entityBase);
+            currentEntity.Initialize(entityBase, this);
             PlaceEntityInstance(currentEntity);
         }
         else
         {
-            //Can not place new entity while there is an unplaced one
+            Debug.LogError("Can not place new entity while there is an unplaced one");
         }
     }
 }
