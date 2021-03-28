@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
@@ -9,6 +10,7 @@ public class EntityBehaviourToggle : MonoBehaviour
 {
     public Button AttachButton;
     public Image BehaviourImage;
+    public TextMeshProUGUI EntityName;
 
     private bool _isAttached => !_entityBase.EntityBehaviourCanBeAdded(_behaviour);
 
@@ -28,6 +30,8 @@ public class EntityBehaviourToggle : MonoBehaviour
 
 
         _behaviour = behaviour;
+
+        EntityName.text = _behaviour.BehaviourName;
 
         BehaviourImage.sprite = _behaviour.Icon;
         AttachButton.onClick.AddListener(ButtonClicked);

@@ -1,3 +1,5 @@
+using Messages;
+using UniRx;
 using UnityEngine;
 
 /// <summary>
@@ -15,6 +17,7 @@ public class GivePointsBehaviour : EntityBehaviourBase
     public override void BehaviourAction(Vector3 position)
     {
         base.BehaviourAction(position);
+        MessageBroker.Default.Publish(new AddCoinMessage());
         Debug.Log("Point adding triggered");
     }
 }

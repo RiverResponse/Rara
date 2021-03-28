@@ -33,10 +33,12 @@ public class EntityBuilder : StateReactor
 
     [Tooltip("Root object for the list elements")]
     public RectTransform InstanceRoot;
+
+    public GameObject CloseButton;
     
     private ReactiveCollection<EntityBase> _entities;
     private List<EntityListEntityPresenter> _entityButtons;
-    
+
 
     void Start()
     {
@@ -49,9 +51,11 @@ public class EntityBuilder : StateReactor
         GameMaster.Instance.SelectedEntity.Where(x => x != null).Subscribe(_ => ReactToEntityChanged()).AddTo(this);
         GameMaster.Instance.SelectedEntity.Where(x => x == null).Subscribe(_ => ClearUI()).AddTo(this);
 
+        _entities.ObserveCountChanged().Subscribe(x => CloseButton.SetActive(x > 0)).AddTo(this);
+        
         _entities.ObserveAdd().Subscribe(ReactToEntityAdded).AddTo(this);
         _entities.ObserveRemove().Subscribe(ReactToEntityRemoved).AddTo(this);
-        
+
         // MessageBroker.Default.Receive<SelectEntityBaseMessage>().Subscribe(msg => ReactToEntitySelected(msg.Entity)).AddTo(this);
         MessageBroker.Default.Receive<RemoveEntityMessage>().Subscribe(msg => _entities.Remove(msg.EntityBase)).AddTo(this);
     }
@@ -59,8 +63,9 @@ public class EntityBuilder : StateReactor
     private void ReactToEntityAdded(CollectionAddEvent<EntityBase> e)
     {
         var instance = Instantiate(EntityListEntityPresenterPrefab, InstanceRoot);
+        instance.transform.SetSiblingIndex(2);
         instance.Init(e.Value);
-        _entityButtons.Add(instance);
+        _entityButtons.Insert(0, instance);
     }
 
     private void ReactToEntityRemoved(CollectionRemoveEvent<EntityBase> e)
@@ -103,6 +108,5 @@ public class EntityBuilder : StateReactor
 
     private void ClearUI()
     {
-        
     }
 }

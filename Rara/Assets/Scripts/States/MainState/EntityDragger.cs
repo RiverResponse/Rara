@@ -6,6 +6,7 @@ using Messages;
 using UniRx;
 using UnityEngine;
 using UnityEngine.Assertions.Must;
+using UnityEngine.UI;
 
 public class EntityDragger : MonoBehaviour
 {
@@ -18,6 +19,8 @@ public class EntityDragger : MonoBehaviour
     private readonly ReactiveProperty<EntityInstanceSlot> _entityInstanceSlot = new ReactiveProperty<EntityInstanceSlot>();
     private readonly BoolReactiveProperty _isDragged = new BoolReactiveProperty(false);
 
+    private float _lastMousePosition;
+
     private Plane _groundPlane;
 
     private Ray _mousePointRay => SceneCamera.ScreenPointToRay(Input.mousePosition);
@@ -29,6 +32,10 @@ public class EntityDragger : MonoBehaviour
 
         var editorObservable = Observable.EveryUpdate().Where(x => GameMaster.Instance.CurrentAppState.Value == ActivateUIMessage.AppStateTypes.LevelEditor);
 
+        Observable.EveryUpdate()
+            .Where(_ => GameMaster.Instance.CurrentAppState.Value == ActivateUIMessage.AppStateTypes.Simulation ||
+                        GameMaster.Instance.CurrentAppState.Value == ActivateUIMessage.AppStateTypes.LevelEditor).Where(__ => _hoveredEntity.Value == null).Subscribe(x => PanCamera()).AddTo(this);
+
         editorObservable.Where(_ => !_isDragged.Value).Subscribe(x => CheckForGrabbable()).AddTo(this);
         editorObservable.Where(_ => _isDragged.Value).Subscribe(x => CheckForSlot()).AddTo(this);
 
@@ -37,6 +44,7 @@ public class EntityDragger : MonoBehaviour
             _hoveredEntity.Value.DragStarted();
             _isDragged.Value = true;
         }).AddTo(this);
+        
         editorObservable.Where(_ => _hoveredEntity.Value != null).Where(_ => Input.GetMouseButtonUp(0)).Subscribe(x =>
         {
             _hoveredEntity.Value.DragEnded();
@@ -50,14 +58,27 @@ public class EntityDragger : MonoBehaviour
             pair.Current?.SetIsHovered(true);
         }).AddTo(this);
 
-        _entityInstanceSlot.Pairwise().Subscribe(pair =>
-        {
-            pair.Previous?.SetIsHovered(false);
-            pair.Current?.SetIsHovered(true);
-            pair.Current?.SetPresenter(_hoveredEntity.Value);
-        }).AddTo(this);
+        _entityInstanceSlot.Subscribe(slot => { slot?.SetPresenter(_hoveredEntity.Value); }).AddTo(this);
 
         _isDragged.Subscribe(HandleIsDraggedChanged).AddTo(this);
+    }
+
+    void PanCamera()
+    {
+        if (Input.GetMouseButtonDown(0))
+        {
+            _lastMousePosition = Input.mousePosition.x;
+        }
+
+        if (Input.GetMouseButton(0))
+        {
+            var curMousePos = Input.mousePosition.x;
+            var angle = (curMousePos - _lastMousePosition) * Time.deltaTime;
+
+            SceneCamera.transform.parent.Rotate(Vector3.up, angle, Space.Self);
+
+            _lastMousePosition = curMousePos;
+        }
     }
 
     void CheckForGrabbable()

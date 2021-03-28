@@ -12,9 +12,11 @@ public class EntityListEntityPresenter : MonoBehaviour
     public TextMeshProUGUI NameLabel;
     public TextMeshProUGUI DescLabel;
     public Button SelectEntityButton;
+    public GameObject SelectionIndicator;
 
     void Start()
     {
+        GameMaster.Instance.SelectedEntity.Subscribe(x => SelectionIndicator.SetActive(x != null && x == MyEntity.Value)).AddTo(this);
         SelectEntityButton.onClick.AddListener(ChooseEntity);
         BindData();
     }

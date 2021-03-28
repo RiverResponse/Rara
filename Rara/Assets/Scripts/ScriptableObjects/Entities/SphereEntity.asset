@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: SphereEntity
   m_EditorClassIdentifier: 
   Prefab: {fileID: 4847545748549377432, guid: f54a82a47123aef4ba9fc2c5703a54b7, type: 3}
-  Icon: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
+  Icon: {fileID: 21300000, guid: e4e82989b7434ad44a7fb5b4678de0e5, type: 3}

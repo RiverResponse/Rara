@@ -7,28 +7,13 @@ public class EntityInstanceSlot : MonoBehaviour
 {
     public bool IsEmpty => _currentEntity == null;
     protected EntityPresenter _currentEntity;
-    public MeshRenderer MeshRenderer;
-    public Material NotHoverMaterial;
-    public Material HoverMaterial;
-    private BoolReactiveProperty _isHovered = new BoolReactiveProperty(false);
 
-    void Start()
-    {
-        if (MeshRenderer != null)
-        {
-            _isHovered.Subscribe(b => MeshRenderer.sharedMaterial = b ? HoverMaterial : NotHoverMaterial).AddTo(this);
-        }
-    }
+
 
     protected void PlaceEntityInstance(EntityPresenter instance)
     {
         _currentEntity = instance;
         _currentEntity.transform.position = transform.position;
-    }
-
-    public void SetIsHovered(bool isHovered)
-    {
-        _isHovered.Value = isHovered;
     }
 
     public void SetPresenter(EntityPresenter hoveredEntityValue)

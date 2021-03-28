@@ -50,12 +50,17 @@ public class GameMaster : MonoBehaviour
             Destroy(gameObject);
         }
 
+        if (SceneManager.sceneCount == 1)
+        {
+            SceneManager.LoadScene(EntityBuilderScene.name, LoadSceneMode.Additive);
+        }
+
         SelectedEntity = _selectedEntity.ToReadOnlyReactiveProperty();
         CurrentAppState = _currentAppState.ToReadOnlyReactiveProperty();
         MessageBroker.Default.Receive<SelectEntityBaseMessage>().Subscribe(msg => _selectedEntity.Value = msg.Entity).AddTo(this);
         MessageBroker.Default.Receive<ActivateUIMessage>().Subscribe(msg => _currentAppState.Value = msg.AppStateType).AddTo(this);
 
-        Observable.NextFrame().Subscribe(_ => MessageBroker.Default.Publish(new ActivateUIMessage(ActivateUIMessage.AppStateTypes.LevelEditor)));
+        Observable.NextFrame(FrameCountType.FixedUpdate).Subscribe(_ => MessageBroker.Default.Publish(new ActivateUIMessage(ActivateUIMessage.AppStateTypes.EntityEditor)));
 
         CurrentAppState.Subscribe(scene =>
         {

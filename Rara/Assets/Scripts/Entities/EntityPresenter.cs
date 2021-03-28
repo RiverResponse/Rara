@@ -25,6 +25,11 @@ public class EntityPresenter : MonoBehaviour
 
     private GameObject _instance;
     private BoolReactiveProperty _isHovered = new BoolReactiveProperty(false);
+    public AudioSource AudioSource;
+    public AudioClip StepClip;
+    public AudioClip DestroyClip;
+
+    private float _pitch;
 
 
     public void Initialize(EntityBase data, EntityInstanceSlot slot)
@@ -67,6 +72,12 @@ public class EntityPresenter : MonoBehaviour
 
     public void SetCurrentSlot(EntityInstanceSlot slot)
     {
+        if (!(slot is EntityInstanceDefaultSlot))
+        {
+            AudioSource.PlayOneShot(StepClip);
+            AudioSource.pitch += 0.05f;
+        }
+
         _currentSlot.Value = slot;
     }
 
@@ -83,9 +94,13 @@ public class EntityPresenter : MonoBehaviour
     public void DragEnded()
     {
         _collider.enabled = true;
+        AudioSource.pitch = 1f;
         if (_currentSlot.Value is DestroyEntityInstanceSlot)
         {
-            Destroy(gameObject);
+            AudioSource.PlayOneShot(DestroyClip);
+            Observable.NextFrame().Delay(TimeSpan.FromSeconds(DestroyClip.length)).Subscribe(_ => Destroy(gameObject));
+            _collider.enabled = false;
+            _meshRenderer.enabled = false;
         }
     }
 

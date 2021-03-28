@@ -2656,7 +2656,7 @@ MonoBehaviour:
     IsBuilt: 0
   backfaces_: 0
   materials:
-  - {fileID: 2100000, guid: f57590384f3123d47be2ca510d885e22, type: 2}
+  - {fileID: 2100000, guid: 33f88d3078ed5ce41a127cbb7fa5312b, type: 2}
   editMode: 1
   recalculateTangents: 1
   serializedGuid: 
@@ -2690,7 +2690,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: f57590384f3123d47be2ca510d885e22, type: 2}
+  - {fileID: 2100000, guid: 33f88d3078ed5ce41a127cbb7fa5312b, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -2757,7 +2757,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   MeshRenderer: {fileID: 335169627721143612}
-  NotHoverMaterial: {fileID: 2100000, guid: f57590384f3123d47be2ca510d885e22, type: 2}
+  NotHoverMaterial: {fileID: 2100000, guid: 33f88d3078ed5ce41a127cbb7fa5312b, type: 2}
   HoverMaterial: {fileID: 2100000, guid: e2bf94918440eef4b8ec8854b8e3eae4, type: 2}
 --- !u!65 &4712520729398980707
 BoxCollider:
