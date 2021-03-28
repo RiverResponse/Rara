@@ -35,9 +35,4 @@ public class EntityBehaviourBase : ScriptableObject
     {
         Instantiate(ActionIndicator, position, quaternion.identity);
     }
-
-    public virtual void SetToDefault()
-    {
-        
-    }
 }
