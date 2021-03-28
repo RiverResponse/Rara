@@ -47,7 +47,7 @@ public class EntityInspector : StateReactor
         // _isEnabled.CombineLatest(_selected, (isEnabled, selected) => isEnabled && selected != null).Subscribe(b => _isActive.Value = b).AddTo(this);
         //
         // MessageBroker.Default.Receive<ActivateUIMessage>().Subscribe(msg => _isEnabled.Value = msg.SceneType == ActivateUIMessage.SceneTypes.EntityEditor).AddTo(this);
-        
+
         for (int i = 0; i < BehaviourCollection.Behaviors.Count; i++)
         {
             var toggle = Instantiate(EntityBehaviourTogglePrefab, EntityBehaviourToggleRoot);
@@ -81,8 +81,9 @@ public class EntityInspector : StateReactor
 
     private void CreateInstance()
     {
-        MessageBroker.Default.Publish(new InstantiateEntityMessage(_selected.Value));
         MessageBroker.Default.Publish(new ActivateUIMessage(ActivateUIMessage.AppStateTypes.LevelEditor));
+        Observable.NextFrame().Subscribe(_ =>
+            MessageBroker.Default.Publish(new InstantiateEntityMessage(_selected.Value)));
     }
 
     void BindData()

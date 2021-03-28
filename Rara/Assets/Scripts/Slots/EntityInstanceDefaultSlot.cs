@@ -8,7 +8,7 @@ public class EntityInstanceDefaultSlot : EntityInstanceSlot
 {
     public EntityPresenter EntityPresenterPrefab;
 
-    void Start()
+    void Awake()
     {
         MessageBroker.Default.Receive<InstantiateEntityMessage>().Subscribe(msg => InstantiateEntity(msg.Entity)).AddTo(this);
     }
